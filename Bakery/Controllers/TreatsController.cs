@@ -30,9 +30,12 @@ namespace Bakery.Controllers
       var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       List<Treat> userTreats;
 
+      // Should my tables only show an edit/delete link if I am the owner
+      // of that specific Treat/Flavor? And if so how do I go about doing that
+      // in a way that doesn't cause me to slam against my database a million
+      // times
       if (userId == null)
       {
-        System.Console.WriteLine("Null userId");
         userTreats = _db.Treats.ToList();
       }
       else
