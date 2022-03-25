@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Bakery.Models;
 
 namespace Bakery
@@ -35,12 +37,12 @@ namespace Bakery
 
       services.Configure<IdentityOptions>(options =>
       {
-        options.Password.RequiredDigit = false;
+        options.Password.RequireDigit = false;
         options.Password.RequiredLength = 0;
         options.Password.RequireLowercase = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
-        options.Password.RequireUniqueChars = 0;
+        options.Password.RequiredUniqueChars = 0;
       });
     }
 
