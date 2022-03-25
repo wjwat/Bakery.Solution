@@ -1,0 +1,142 @@
+:root {
+  --width-content: 50rem;
+}
+
+body > header h1 {
+  text-align: center;
+}
+
+button {
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-top: 0.75rem;
+}
+
+fieldset {
+  padding-bottom: 1rem;
+  overflow: hidden;
+}
+
+form {
+  overflow: hidden;
+}
+
+legend {
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
+table {
+  border: none;
+  border: 2px dotted #ddd;
+  border-left: 8px solid #001f3f;
+  margin: 0 auto;
+}
+
+thead {
+  background-color: var(--color-bg);
+}
+
+th {
+  background-color: #aaa;
+  color: #001f3f;
+}
+
+td {
+  padding: 0.25rem 0.1rem;
+}
+
+td, th {
+  border: 1px solid #ddd;
+}
+
+tbody tr td:first-child {
+  width: 20%;
+}
+
+tbody tr td:first-child {
+  text-align: right;
+  padding-right: 1rem;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: var(--color-bg);
+}
+
+textarea {
+  resize: vertical;
+}
+
+footer a {
+  margin: 0.5rem auto;
+  text-decoration: none;
+}
+
+.center {
+  text-align: center;
+}
+
+.delete {
+  background-color: #DA3D34;
+  border: 2px solid darkred;
+  color: #FFDC00;
+  font-weight: bold;
+  text-shadow: black 1px 1px;
+}
+
+.delete-name {
+  color: red;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+
+.disabled {
+  border: 2px solid var(--color-gray);
+  color: white;
+  font-weight: bold;
+  background-color: #acafbd;
+  cursor: not-allowed;
+  text-shadow: black 1px 1px;
+}
+
+.details tbody tr td:nth-child(1) {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.details tbody tr td:nth-child(2) {
+  padding-left: 1rem;
+  text-align: left;
+}
+
+/*** Errors ***/
+.input-validation-error {
+  border: 2px solid red;
+}
+
+.field-validation-error {
+  color: red;
+}
+
+/*** Lil Guy ***/
+
+.lilguy:hover {
+  color: #f012be;
+  font-weight: bold;
+  text-shadow: #ffdc00 1px 1px;
+}
+
+.lilguy:hover:after {
+  color: #f012be;
+  content: "( ͠° ͟ʖ ͡°) <(AINT NOTHING SWEET 'BOUT PIERRE)";
+}
+
+@keyframes rainbow_animation {
+  0%,100% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+}
