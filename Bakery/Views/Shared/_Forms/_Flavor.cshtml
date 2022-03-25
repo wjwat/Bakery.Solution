@@ -1,0 +1,10 @@
+@model Bakery.Models.Flavor
+
+@using (Html.BeginForm())
+{
+  @Html.LabelFor(f => f.Name)
+  @Html.TextBoxFor(f => f.Name)
+  @Html.ValidationMessageFor(f => f.Name)
+  <br />
+  <button>Add new Flavor</button>
+}

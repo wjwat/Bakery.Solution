@@ -1,0 +1,18 @@
+@model Bakery.Models.Flavor
+
+<table class='details'>
+  <tbody>
+  <tr>
+    <td>ID</td>
+    <td>@Model.FlavorId</td>
+  </tr>
+  <tr>
+    <td>Name</td>
+    <td>@Model.Name</td>
+  </tr>
+  <tr>
+    <td>Treats</td>
+    <td>@Model.JoinEntities.Count()</td>
+  </tr>
+  </tbody>
+</table>

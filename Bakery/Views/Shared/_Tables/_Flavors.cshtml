@@ -1,0 +1,30 @@
+@using Bakery.Models
+@model List<Bakery.Models.Flavor>
+
+<table>
+  <thead>
+    <tr>
+      <th style='width: 10%'>ID</th>
+      <th>Name</th>
+      <th style='width: 12%'>Treats</th>
+      <th style='width: 20%'></th>
+    </tr>
+  </thead>
+  <tbody>
+@foreach (Flavor f in Model)
+{
+  <tr>
+    <td>@f.FlavorId</td>
+    <td>@f.Name</td>
+    <td>@f.JoinEntities.Count</td>
+    <td>
+        @*@Html.ActionLink("Details", "Details", "Engineers", new {id = e.EngineerId }) | 
+        @Html.ActionLink("Edit", "Edit", "Engineers", new { id = e.EngineerId }) | 
+        @Html.ActionLink("Delete", "Delete", "Engineers", new { id = e.EngineerId})
+        *@
+    </td>
+  </tr>
+}
+  </tbody>
+</table>
+

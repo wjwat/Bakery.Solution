@@ -1,0 +1,14 @@
+@model Bakery.Models.Treat
+
+@using (Html.BeginForm())
+{
+  @Html.LabelFor(t => t.Name)
+  @Html.TextBoxFor(t => t.Name)
+  @Html.ValidationMessageFor(t => t.Name)
+
+  @Html.LabelFor(t => t.Description)
+  @Html.TextBoxFor(t => t.Description)
+  @Html.ValidationMessageFor(t => t.Description)
+  <br />
+  <button>Add new Treat</button>
+}

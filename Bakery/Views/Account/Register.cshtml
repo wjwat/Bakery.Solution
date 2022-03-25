@@ -1,3 +1,9 @@
+@section ValidationScripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+}
+
 <h2>Register Your Account</h2>
 
 @await Html.PartialAsync("_Forms/_Register")

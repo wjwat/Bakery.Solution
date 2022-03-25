@@ -2,14 +2,6 @@
 
 <h2>Pierre's Something Something Flavors Treats</h2>
 
-<p>Please select an action below</p>
-
-<p>If you have not done so please register for an account</p>
-<p>If you have registered for an account please login</p>
-
-<p>Add a treat</p>
-<p>Add a flavor</p>
-
 <hr />
 
 @if (Model.Treats.Count != 0)
@@ -22,6 +14,12 @@ else
   <h5>No Treats currently created</h5>
 }
 
+@if (User.Identity.IsAuthenticated)
+{
+  @await Html.PartialAsync("_Buttons/_AddTreat")
+}
+
+
 @if (Model.Flavors.Count != 0)
 {
   <h5>Flavors</h5>
@@ -31,5 +29,11 @@ else
 {
   <h5>No Flavors currently created</h5>
 }
+
+@if (User.Identity.IsAuthenticated)
+{
+  @await Html.PartialAsync("_Buttons/_AddFlavor")
+}
+
 
 <hr />
