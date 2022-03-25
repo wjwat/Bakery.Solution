@@ -1,0 +1,10 @@
+@{
+  var attr = new { style = "border: none" };
+}
+
+<h2>Are you sure you want to logout?</h2>
+
+@using (Html.BeginForm("LogoutConfirmed", "Account", FormMethod.Post, attr))
+{
+  <button>Logout</button>
+}

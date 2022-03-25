@@ -1,0 +1,13 @@
+<h2>Account</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+  <p>You are already logged in</p>
+
+  @await Html.PartialAsync("_Buttons/_Logout")
+}
+else
+{
+  @await Html.PartialAsync("_Buttons/_Register")
+  @await Html.PartialAsync("_Buttons/_Login")
+}
