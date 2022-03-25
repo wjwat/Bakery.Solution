@@ -24,11 +24,22 @@ namespace Bakery.Controllers
       _db = db;
     }
 
+    [AllowAnonymous]
     public async Task<ActionResult> Index()
     {
       var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-      var currentUser = await _userManager.FindByIdAsync(userId);
-      var userTreats = _db.Treats.Where(entry => entry.User.Id == currentUser.Id).ToList();
+      List<Treat> userTreats;
+
+      if (userId == null)
+      {
+        System.Console.WriteLine("Null userId");
+        userTreats = _db.Treats.ToList();
+      }
+      else
+      {
+        var currentUser = await _userManager.FindByIdAsync(userId);
+        userTreats = _db.Treats.Where(entry => entry.User.Id == currentUser.Id).ToList();
+      }
       return View(userTreats);
     }
 
@@ -48,12 +59,13 @@ namespace Bakery.Controllers
       _db.SaveChanges();
       if (FlavorId != 0)
       {
-          _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
+        _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
       }
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
 
+    [AllowAnonymous]
     public ActionResult Details(int id)
     {
       var thisTreat = _db.Treats
@@ -94,7 +106,7 @@ namespace Bakery.Controllers
     {
       if (FlavorId != 0)
       {
-      _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
+        _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
       }
       _db.SaveChanges();
       return RedirectToAction("Index");

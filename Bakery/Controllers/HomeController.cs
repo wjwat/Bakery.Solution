@@ -16,7 +16,6 @@ namespace Bakery.Controllers
         _db = db;
       }
 
-
       public ActionResult Index()
       {
         var HomeModel = new HomeViewModel {
