@@ -1,0 +1,15 @@
+@model Bakery.ViewModels.RegisterViewModel
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post))
+{
+  @Html.LabelFor(u => u.Email)
+  @Html.TextBoxFor(u => u.Email)
+
+  @Html.LabelFor(u => u.Password)
+  @Html.PasswordFor(u => u.Password)
+
+  @Html.LabelFor(u => u.ConfirmPassword)
+  @Html.PasswordFor(u => u.ConfirmPassword)
+
+  <button>Register</button>
+}

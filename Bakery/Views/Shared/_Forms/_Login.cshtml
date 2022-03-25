@@ -1,0 +1,12 @@
+@model Bakery.ViewModels.LoginViewModel
+
+@using (Html.BeginForm())
+{
+  @Html.LabelFor(u => u.Email)
+  @Html.TextBoxFor(u => u.Email)
+
+  @Html.LabelFor(u => u.Password)
+  @Html.PasswordFor(u => u.Password)
+
+  <button>Submit</button>
+}

@@ -1,0 +1,18 @@
+<h1>Epicodus Project Week 12</h1>
+
+<nav>
+  <ul>
+    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+    <li>@Html.ActionLink("Treats", "Index", "Treats")</li>
+    <li>@Html.ActionLink("Flavors", "Index", "Flavors")</li>
+    @if (User.Identity.IsAuthenticated)
+    {
+      <li>@Html.ActionLink(@User.Identity.Name, "Index", "Account")</li>
+    }
+    else
+    {
+      <li>@Html.ActionLink("Register", "Register", "Account")</li>
+      <li>@Html.ActionLink("Login", "Login", "Account")</li>
+    }
+  </ul>
+</nav>
