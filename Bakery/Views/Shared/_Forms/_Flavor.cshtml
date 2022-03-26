@@ -1,10 +1,33 @@
+@{
+  string isChecked = "";
+}
+
 @model Bakery.Models.Flavor
 
-@using (Html.BeginForm())
+@Html.LabelFor(f => f.Name)
+@Html.TextBoxFor(f => f.Name)
+@Html.ValidationMessageFor(f => f.Name)
+  
+<h5>Treats</h5>
+
+@if (ViewBag.Treats.Count == 0)
 {
-  @Html.LabelFor(f => f.Name)
-  @Html.TextBoxFor(f => f.Name)
-  @Html.ValidationMessageFor(f => f.Name)
-  <br />
-  <button>Add new Flavor</button>
+  <p>No treats currently available</p>
+}
+else
+{
+  <ul>
+  @for (int i = 0; i < ViewBag.Treats.Count; i++)
+  {
+    @if (ViewBag.ExistingTreats != null)
+    {
+      isChecked = (ViewBag.ExistingTreats.Contains(@ViewBag.Treats[i].TreatId)) ? "checked" : "";
+    }
+
+    <li>
+      <input type="checkbox" id="@ViewBag.Treats[i].TreatId-id" name="TreatId" value="@ViewBag.Treats[i].TreatId" @isChecked>
+      <label for="@ViewBag.Treats[i].TreatId-id">@ViewBag.Treats[i].Name</label><br />
+    </li>
+  }
+  </ul>
 }
