@@ -1,27 +1,46 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 using Bakery.Models;
+using Bakery.ViewModels;
 
 namespace Bakery.Controllers
 {
+  [Authorize]
   public class FlavorsController : Controller
   {
-
     private readonly BakeryContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public FlavorsController(BakeryContext db)
+    public FlavorsController(UserManager<ApplicationUser> userManager, BakeryContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
 
+    [AllowAnonymous]
     public ActionResult Index()
     {
-      List<Flavor> flavors = _db.Flavors.ToList();
-      return View(flavors);
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+      var Model = new UserViewModel {
+        Flavors = _db.Flavors.ToList()
+            .OrderByDescending(f => f.User.Id == userId)
+            .ToList(),
+        Treats = _db.Treats
+            .OrderByDescending(t => t.User.Id == userId)
+            .ToList(),
+        UserId = userId
+      };
+
+      return View(Model);
     }
 
     public ActionResult Create()
@@ -31,18 +50,20 @@ namespace Bakery.Controllers
     }
 
     [HttpPost]
-    public ActionResult Create(Flavor flavor, int[] TreatId)
+    public async Task<ActionResult> Create(Flavor flavor, int[] TreatId)
     {
-      // Save before adding treats or C# will throw an error because
-      // it doesn't see the PK for our new Flavor
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      var currentUser = await _userManager.FindByIdAsync(userId);
+      flavor.User = currentUser;
+
       _db.Flavors.Add(flavor);
       _db.SaveChanges();
 
-      foreach (int m in TreatId)
+      foreach (int t in TreatId)
       {
         _db.FlavorTreat.Add(new FlavorTreat() {
-            FlavorId = flavor.FlavorId,
-            TreatId = m
+          TreatId = t,
+          FlavorId = flavor.FlavorId
         });
       }
       _db.SaveChanges();
@@ -50,58 +71,61 @@ namespace Bakery.Controllers
       return RedirectToAction("Index");
     }
 
+    [AllowAnonymous]
     public ActionResult Details(int id)
     {
-      var flavor = _db.Flavors
-          .FirstOrDefault(e => e.FlavorId == id);
-      return View(flavor);
+      var thisFlavor = _db.Flavors
+          .FirstOrDefault(flavor => flavor.FlavorId == id);
+
+      if (thisFlavor == null)
+      {
+        RedirectToAction("Index");
+      }
+
+      return View(thisFlavor);
     }
 
     public ActionResult Edit(int id)
     {
-      var flavor = _db.Flavors.FirstOrDefault(e => e.FlavorId == id);
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      var thisFlavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
+
+      if (thisFlavor == null || thisFlavor.User.Id != userId)
+      {
+        return RedirectToAction("Index");
+      }
+
       ViewBag.Treats = _db.Treats.ToList();
-      ViewBag.AuthorizedTreats = _db.FlavorTreat
-          .Where(e => e.FlavorId == id)
-          .Select(m => m.TreatId)
+      ViewBag.ExistingTreats = _db.FlavorTreat
+          .Where(f => f.FlavorId == id)
+          .Select(t => t.TreatId)
           .ToList();
 
-      return View(flavor);
+      return View(thisFlavor);
     }
 
-    // Delete every relationship that is not passed back on submit, and
-    // create any that are passed back that do not already exist.
-    //
-    // The values that are passed back in TreatId[] represent the total
-    // state of relationships between our two entities.
     [HttpPost]
     public ActionResult Edit(Flavor flavor, int[] TreatId)
     {
-      // Remove relationships not present in TreatId[]
       _db.FlavorTreat
-          .Where(e => e.FlavorId == flavor.FlavorId
-                    && !TreatId.Contains(e.TreatId))
+          .Where(f => f.FlavorId == flavor.FlavorId
+              && !TreatId.Contains(f.TreatId))
           .ToList()
           .ForEach(row => _db.FlavorTreat.Remove(row));
 
-      // Add relationships present in TreatId
-      // Can this be done in a LINQ query?
-      foreach (int m in TreatId)
+      foreach (int t in TreatId)
       {
-        // I'd prefer to attempt to Add the new key without the conditional
-        // but in order to catch the exception I would have to pull in other
-        // packages (which I'm unwilling to do), or have an overly broad
-        // catch (which I am also unwilling to do).
-        if (_db.FlavorTreat.Any(em => em.FlavorId == flavor.FlavorId && em.TreatId == m))
+        if (_db.FlavorTreat.Any(ft => ft.FlavorId == flavor.FlavorId && ft.TreatId == t))
         {
           continue;
         }
 
         _db.FlavorTreat.Add(new FlavorTreat() {
-            FlavorId = flavor.FlavorId,
-            TreatId = m
+          TreatId = t,
+          FlavorId = flavor.FlavorId
         });
       }
+
 
       _db.Entry(flavor).State = EntityState.Modified;
       _db.SaveChanges();
@@ -110,16 +134,29 @@ namespace Bakery.Controllers
 
     public ActionResult Delete(int id)
     {
-      var flavor = _db.Flavors
-          .FirstOrDefault(e => e.FlavorId == id);
-      return View(flavor);
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      var thisFlavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
+
+      if (thisFlavor == null || thisFlavor.User.Id != userId)
+      {
+        return RedirectToAction("Index");
+      }
+
+      return View(thisFlavor);
     }
 
     [HttpPost, ActionName("Delete")]
     public ActionResult DeleteConfirmed(int id)
     {
-      var flavor = _db.Flavors.FirstOrDefault(e => e.FlavorId == id);
-      _db.Flavors.Remove(flavor);
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      var thisFlavor = _db.Flavors.FirstOrDefault(f => f.FlavorId == id);
+
+      if (thisFlavor == null || thisFlavor.User.Id != userId)
+      {
+        return RedirectToAction("Index");
+      }
+
+      _db.Flavors.Remove(thisFlavor);
       _db.SaveChanges();
       return RedirectToAction("Index");
     }

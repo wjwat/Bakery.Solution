@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Bakery.Models;
+using Bakery.ViewModels;
 
 namespace Bakery.Controllers
 {
@@ -25,46 +26,48 @@ namespace Bakery.Controllers
     }
 
     [AllowAnonymous]
-    public async Task<ActionResult> Index()
+    public ActionResult Index()
     {
       var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-      List<Treat> userTreats;
 
-      // Should my tables only show an edit/delete link if I am the owner
-      // of that specific Treat/Flavor? And if so how do I go about doing that
-      // in a way that doesn't cause me to slam against my database a million
-      // times
-      if (userId == null)
-      {
-        userTreats = _db.Treats.ToList();
-      }
-      else
-      {
-        var currentUser = await _userManager.FindByIdAsync(userId);
-        userTreats = _db.Treats.Where(entry => entry.User.Id == currentUser.Id).ToList();
-      }
-      return View(userTreats);
+      var Model = new UserViewModel {
+        Flavors = _db.Flavors.ToList()
+            .OrderByDescending(f => f.User.Id == userId)
+            .ToList(),
+        Treats = _db.Treats
+            .OrderByDescending(t => t.User.Id == userId)
+            .ToList(),
+        UserId = userId
+      };
+
+      return View(Model);
     }
 
     public ActionResult Create()
     {
-      ViewBag.FlavorId = new SelectList(_db.Flavors, "FlavorId", "Name");
+      ViewBag.Flavors = _db.Flavors.ToList();
       return View();
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(Treat treat, int FlavorId)
+    public async Task<ActionResult> Create(Treat treat, int[] FlavorId)
     {
       var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       var currentUser = await _userManager.FindByIdAsync(userId);
       treat.User = currentUser;
+
       _db.Treats.Add(treat);
       _db.SaveChanges();
-      if (FlavorId != 0)
+
+      foreach (int f in FlavorId)
       {
-        _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
+        _db.FlavorTreat.Add(new FlavorTreat() {
+          TreatId = treat.TreatId,
+          FlavorId = f
+        });
       }
       _db.SaveChanges();
+
       return RedirectToAction("Index");
     }
 
@@ -72,71 +75,94 @@ namespace Bakery.Controllers
     public ActionResult Details(int id)
     {
       var thisTreat = _db.Treats
-          .Include(treat => treat.JoinEntities)
-          .ThenInclude(join => join.Flavor)
           .FirstOrDefault(treat => treat.TreatId == id);
+
+      if (thisTreat == null)
+      {
+        RedirectToAction("Index");
+      }
+
       return View(thisTreat);
     }
 
     public ActionResult Edit(int id)
     {
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       var thisTreat = _db.Treats.FirstOrDefault(treat => treat.TreatId == id);
-      ViewBag.FlavorId = new SelectList(_db.Flavors, "FlavorId", "Name");
+
+      if (thisTreat == null || thisTreat.User.Id != userId)
+      {
+        return RedirectToAction("Index");
+      }
+
+      ViewBag.Flavors = _db.Flavors.ToList();
+      ViewBag.ExistingFlavors = _db.FlavorTreat
+          .Where(t => t.TreatId == id)
+          .Select(f => f.FlavorId)
+          .ToList();
+
       return View(thisTreat);
     }
 
     [HttpPost]
-    public ActionResult Edit(Treat treat, int FlavorId)
+    public ActionResult Edit(Treat treat, int[] FlavorId)
     {
-      if (FlavorId != 0)
+      // How would I validate that a given edit Post is authorized by the user
+      // making the edit?
+
+      _db.FlavorTreat
+          .Where(t => t.TreatId == treat.TreatId
+              && !FlavorId.Contains(t.FlavorId))
+          .ToList()
+          .ForEach(row => _db.FlavorTreat.Remove(row));
+
+      foreach (int f in FlavorId)
       {
-        _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
+        if (_db.FlavorTreat.Any(ft => ft.TreatId == treat.TreatId && ft.FlavorId == f))
+        {
+          continue;
+        }
+
+        _db.FlavorTreat.Add(new FlavorTreat() {
+          TreatId = treat.TreatId,
+          FlavorId = f
+        });
       }
+
+
       _db.Entry(treat).State = EntityState.Modified;
-      _db.SaveChanges();
-      return RedirectToAction("Index");
-    }
-
-    public ActionResult AddFlavor(int id)
-    {
-      var thisTreat = _db.Treats.FirstOrDefault(treat => treat.TreatId == id);
-      ViewBag.FlavorId = new SelectList(_db.Flavors, "FlavorId", "Name");
-      return View(thisTreat);
-    }
-
-    [HttpPost]
-    public ActionResult AddFlavor(Treat treat, int FlavorId)
-    {
-      if (FlavorId != 0)
-      {
-        _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
-      }
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
 
     public ActionResult Delete(int id)
     {
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       var thisTreat = _db.Treats.FirstOrDefault(treat => treat.TreatId == id);
+
+      if (thisTreat == null || thisTreat.User.Id != userId)
+      {
+        return RedirectToAction("Index");
+      }
+
       return View(thisTreat);
     }
 
     [HttpPost, ActionName("Delete")]
     public ActionResult DeleteConfirmed(int id)
     {
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       var thisTreat = _db.Treats.FirstOrDefault(treat => treat.TreatId == id);
+
+      if (thisTreat == null || thisTreat.User.Id != userId)
+      {
+        return RedirectToAction("Index");
+      }
+
       _db.Treats.Remove(thisTreat);
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
 
-    [HttpPost]
-    public ActionResult DeleteFlavor(int joinId)
-    {
-      var joinEntry = _db.FlavorTreat.FirstOrDefault(entry => entry.FlavorTreatId == joinId);
-      _db.FlavorTreat.Remove(joinEntry);
-      _db.SaveChanges();
-      return RedirectToAction("Index");
-    }
   }
 }
