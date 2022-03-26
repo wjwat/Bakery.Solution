@@ -1,5 +1,5 @@
 @using Bakery.Models
-@model List<Bakery.Models.Flavor>
+@model Bakery.ViewModels.UserViewModel
 
 <table>
   <thead>
@@ -11,20 +11,23 @@
     </tr>
   </thead>
   <tbody>
-@foreach (Flavor f in Model)
+@foreach (Flavor f in Model.Flavors)
 {
   <tr>
     <td>@f.FlavorId</td>
     <td>@f.Name</td>
     <td>@f.JoinEntities.Count</td>
     <td>
-        @*@Html.ActionLink("Details", "Details", "Engineers", new {id = e.EngineerId }) | 
-        @Html.ActionLink("Edit", "Edit", "Engineers", new { id = e.EngineerId }) | 
-        @Html.ActionLink("Delete", "Delete", "Engineers", new { id = e.EngineerId})
-        *@
+      @Html.ActionLink("Details", "Details", "Flavors", new { id = f.FlavorId })
+      @if (Model.UserId == f.User.Id)
+      {
+        <span> | </span>
+        @Html.ActionLink("Edit", "Edit", "Flavors", new { id = f.FlavorId })
+        <span> | </span>
+        @Html.ActionLink("Delete", "Delete", "Flavors", new { id = f.FlavorId }) 
+      }
     </td>
   </tr>
 }
   </tbody>
 </table>
-

@@ -1,0 +1,25 @@
+@using Bakery.Models
+@model List<Bakery.Models.Treat>
+
+<table>
+  <thead>
+    <tr>
+      <th style='width: 10%'>ID</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th style='width: 12%'>Flavors</th>
+    </tr>
+  </thead>
+  <tbody>
+@foreach (Treat t in Model)
+{
+  <tr>
+    <td>@t.TreatId</td>
+    <td>@t.Name</td>
+    <td>@t.Description</td>
+    <td>@t.JoinEntities.Count</td>
+  </tr>
+}
+  </tbody>
+</table>
+

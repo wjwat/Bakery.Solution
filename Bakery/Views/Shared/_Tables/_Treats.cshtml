@@ -1,5 +1,5 @@
 @using Bakery.Models
-@model List<Bakery.Models.Treat>
+@model Bakery.ViewModels.UserViewModel
 
 <table>
   <thead>
@@ -12,7 +12,7 @@
     </tr>
   </thead>
   <tbody>
-@foreach (Treat t in Model)
+@foreach (Treat t in Model.Treats)
 {
   <tr>
     <td>@t.TreatId</td>
@@ -20,10 +20,14 @@
     <td>@t.Description</td>
     <td>@t.JoinEntities.Count</td>
     <td>
-        @*@Html.ActionLink("Details", "Details", "Engineers", new {id = e.EngineerId }) | 
-        @Html.ActionLink("Edit", "Edit", "Engineers", new { id = e.EngineerId }) | 
-        @Html.ActionLink("Delete", "Delete", "Engineers", new { id = e.EngineerId})
-        *@
+      @Html.ActionLink("Details", "Details", "Treats", new { id = t.TreatId })
+      @if (Model.UserId == t.User.Id)
+      {
+        <span> | </span>
+        @Html.ActionLink("Edit", "Edit", "Treats", new { id = t.TreatId })
+        <span> | </span>
+        @Html.ActionLink("Delete", "Delete", "Treats", new { id = t.TreatId })
+      }
     </td>
   </tr>
 }
