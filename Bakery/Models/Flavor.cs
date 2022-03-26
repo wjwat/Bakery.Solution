@@ -16,6 +16,8 @@ namespace Bakery.Models
     [Required, StringLength(40, MinimumLength = 3)]
     public string Name { get; set; }
 
+    public virtual ApplicationUser User { get; set; }
+
     public virtual ICollection<FlavorTreat> JoinEntities { get; }
   }
 }
