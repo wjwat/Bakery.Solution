@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bakery.Migrations
 {
     [DbContext(typeof(BakeryContext))]
-    [Migration("20220325204106_primary")]
-    partial class primary
+    [Migration("20220326135506_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,7 +94,12 @@ namespace Bakery.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("FlavorId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Flavors");
                 });
@@ -271,6 +276,15 @@ namespace Bakery.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Bakery.Models.Flavor", b =>
+                {
+                    b.HasOne("Bakery.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Bakery.Models.FlavorTreat", b =>

@@ -92,7 +92,12 @@ namespace Bakery.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("FlavorId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Flavors");
                 });
@@ -269,6 +274,15 @@ namespace Bakery.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Bakery.Models.Flavor", b =>
+                {
+                    b.HasOne("Bakery.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Bakery.Models.FlavorTreat", b =>
