@@ -1,0 +1,29 @@
+@{
+  @using Microsoft.AspNetCore.Identity;
+  @using Bakery.Models;
+
+  @inject UserManager<ApplicationUser> userManager;
+
+  var user = await userManager.GetUserAsync(User);
+  var userId = user?.Id;
+}
+
+@model Bakery.Models.Treat
+
+<fieldset>
+  <legend>@Model.Name</legend>
+
+  @await Html.PartialAsync("_Tables/_TreatDetails")
+
+  @if (User.Identity.IsAuthenticated && userId == Model.User.Id)
+  {
+    @await Html.PartialAsync("_Buttons/_EditTreat")
+    @await Html.PartialAsync("_Buttons/_DeleteTreat")
+  }
+
+  @if (Model.JoinEntities.Count() > 0)
+  {
+    <h5>Flavors:</h5>
+    @await Html.PartialAsync("_Tables/_FlavorsSimple", @Model.JoinEntities.Select(f => f.Flavor).ToList())
+  }
+</fieldset>

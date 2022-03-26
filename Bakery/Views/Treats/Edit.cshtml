@@ -1,0 +1,19 @@
+@section ValidationScripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+}
+@model Bakery.Models.Treat
+
+<h2>Edit</h2>
+
+<h4>Edit this treat: @Model.Name</h4>
+
+@using (Html.BeginForm())
+{
+  @Html.HiddenFor(t => t.TreatId)
+
+  @await Html.PartialAsync("_Forms/_Treat")
+  <br />
+  <button>Edit this treat</button>
+}

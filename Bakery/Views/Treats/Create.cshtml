@@ -8,4 +8,9 @@
 
 <h4>Add a new Treat</h4>
 
-@await Html.PartialAsync("_Forms/_Treat")
+@using (Html.BeginForm())
+{
+  @await Html.PartialAsync("_Forms/_Treat")
+  <br />
+  <button>Add new treat</button>
+}

@@ -1,0 +1,20 @@
+@model Bakery.Models.Treat
+
+<h4>Are you sure you want to delete this Treat?</h4>
+
+@using (Html.BeginForm())
+{
+  <h5>Treat Details</h5>
+  @await Html.PartialAsync("_Tables/_TreatDetails")
+
+  @if (Model.JoinEntities.Count() > 0)
+  {
+    <hr />
+    <h5>This Treat is currently described by these flavors:</h5>
+    @await Html.PartialAsync("_Tables/_FlavorsSimple", @Model.JoinEntities.Select(f => f.Flavor).ToList())
+    <hr />
+  }
+
+  @await Html.PartialAsync("_Buttons/_Cancel")
+  @await Html.PartialAsync("_Buttons/_Delete")
+}
