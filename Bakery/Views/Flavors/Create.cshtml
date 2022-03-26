@@ -8,4 +8,9 @@
 
 <h4>Add a new Flavor</h4>
 
-@await Html.PartialAsync("_Forms/_Flavor")
+@using (Html.BeginForm())
+{
+  @await Html.PartialAsync("_Forms/_Flavor")
+  <br />
+  <button>Add new flavor</button>
+}

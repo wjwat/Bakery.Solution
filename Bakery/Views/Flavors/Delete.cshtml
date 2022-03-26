@@ -11,7 +11,7 @@
   {
     <hr />
     <h5>This flavor is currently describing these treats:</h5>
-    @await Html.PartialAsync("_Tables/_Treats", @Model.JoinEntities.Select(t => t.Treat).ToList())
+    @await Html.PartialAsync("_Tables/_TreatsSimple", @Model.JoinEntities.Select(t => t.Treat).ToList())
     <hr />
   }
 

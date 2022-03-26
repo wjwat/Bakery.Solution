@@ -1,0 +1,18 @@
+<h2>Flavors</h2>
+
+@if (@Model.Flavors.Count == 0)
+{
+  <h3>No Treats have been created yet!</h3>
+}
+else
+{
+  <hr />
+  @await Html.PartialAsync("_Tables/_Flavors")
+  <hr />
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+  @await Html.PartialAsync("_Buttons/_AddFlavor")
+  @await Html.PartialAsync("_Buttons/_AddTreat")
+}
