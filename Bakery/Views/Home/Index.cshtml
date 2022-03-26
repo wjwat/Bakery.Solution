@@ -1,0 +1,39 @@
+@model Bakery.ViewModels.UserViewModel
+
+<h2>Pierre's Something Something Flavors Treats</h2>
+
+<p>Please register & login to manage your flavors & treats.</p>
+<p>If you are logged in you should see your flavors & treats listed below, and all other flavors & treats after that.</p>
+<hr />
+
+@if (Model.Treats.Count != 0)
+{
+  <h5>Treats</h5>
+  @await Html.PartialAsync("_Tables/_Treats")
+}
+else
+{
+  <h5>No Treats currently created</h5>
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+  @await Html.PartialAsync("_Buttons/_AddTreat")
+}
+
+@if (Model.Flavors.Count != 0)
+{
+  <h5>Flavors</h5>
+  @await Html.PartialAsync("_Tables/_Flavors", Model)
+}
+else
+{
+  <h5>No Flavors currently created</h5>
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+  @await Html.PartialAsync("_Buttons/_AddFlavor")
+}
+
+<hr />
