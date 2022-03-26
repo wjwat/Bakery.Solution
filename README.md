@@ -56,7 +56,7 @@ access, create, update, and destroy.
     - Pricing for treats
 - Currently only users that have created a flavor/treat are allowed to Edit/Delete them. Outside of directly modifying our database there is no way to remove those items. It would be nice to have roles where an admin is able to edit all pieces of information currently being tracked, and users are only allowed to edit their own pieces of information.
 - I'd like to have a firmer understanding of how everything works, and how all the pieces work together. At the moment it feels a bit duct taped together.
-- Error messages. We silently fail far too often. If a user tries to access a route they aren't supposed to we should tell them that as well as doing a redirect. Maybe an interstitial error page that redirects after X seconds to give the user a change to read why they're being redirected.
+- Error messages. We silently fail far too often. If a user tries to access a route they aren't supposed to we should tell them that as well as doing a redirect. Maybe an interstitial error page that redirects after X seconds to give the user a chance to read why they're being redirected.
 - There is a lot of duplicate code in both the Treat & Flavor controller, and I'm unsure of how much of it should be DRY'ed up, and what the best path forward on doing so is.
 
 ## :lady_beetle: Known Bugs
